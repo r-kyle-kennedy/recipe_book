@@ -1,5 +1,12 @@
 {% extends 'header_and_footer.html' %}
 
 {% block content %}
-  <h2>recipe book page</h2>
+<h1>{{user.name}}</h1>
+<h1>{{user.recipes.name}}</h1>
+<h1>{{user.recipes.ingreients}}</h1>
+<h1>{{user.recipes.url[0]}}</h1>
+<h1>{{user.recipes.calories[0]}}</h1>
+<h1>{{user.recipes.servings}}</h1>
+<h1>{{user.recipes.amount[0]}}</h1>
+<h1>{{user.recipes.directions}}</h1>
 {% endblock %}
