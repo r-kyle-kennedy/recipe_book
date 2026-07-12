@@ -1,16 +1,19 @@
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://accounts.google.com/gsi/client" async></script>
     <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/cerulean/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/master.css">
+    <title>My Recipe Book</title>
   </head>
   <body>
     <!-- TODO: build nav bar -->
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">My Recipes</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarColor02">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
@@ -28,9 +31,16 @@
               <a class="nav-link" href="/about">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/login">Login</a>
             </li>
           </ul>
+          <div
+            id="g_id_onload"
+            data-auto_prompt="false"
+            data-callback="handleCredentialResponse"
+            data-client_id="24620148182-sd9a0rnkasdt9g9kp4vpq2g7upgqdf0p.apps.googleusercontent.com"
+          ></div>
+          <div class="g_id_signin"></div>
+          <a href="#" onclick="signOut();">Sign out</a>
           <form class="d-flex">
             <input class="form-control me-sm-2" type="search" placeholder="Search">
             <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
@@ -40,5 +50,7 @@
     </nav>
     {% block content %}
     {% endblock %}
+
+    <script type="text/javascript" src="static/js/master.js"></script>
   </body>
 </html>
