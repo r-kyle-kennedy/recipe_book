@@ -16,6 +16,9 @@ from models import db, app, User
 from dotenv import load_dotenv
 
 load_dotenv()
+#set to dasable https, remove for launch
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
 GOOGLE_DISCOVERY_URL = (
@@ -27,29 +30,13 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
-# id = 1
-# def get_user():
-#     # TODO: try to find user and set id else show default info with id = 1
-#     pass
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
 
 @app.route('/')
 def index():
-    if current_user.is_authenticated:
-        return (
-            "<p>Hello, {}! You're logged in! Email: {}</p>"
-            "<div><p>Google Profile Picture:</p>"
-            '<img src="{}" alt="Google profile pic"></img></div>'
-            '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.name, current_user.email, current_user.profile_pic
-            )
-        )
-    else:
-        return '<a class="button" href="/login">Google Login</a>'
-    # return render_template('index.html')
+    return render_template('index.html')
 
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
@@ -67,6 +54,7 @@ def login():
         redirect_uri=request.base_url + "/callback",
         scope=["openid", "email", "profile"],
     )
+    # print(request_uri)
     return redirect(request_uri)
 
 @app.route('/login/callback')
@@ -92,7 +80,7 @@ def callback():
         auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
     )
 
-    # Parse the tokens!
+    # Parse the tokens
     client.parse_request_body_response(json.dumps(token_response.json()))
 
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
@@ -108,16 +96,21 @@ def callback():
         return "User email not available or not verified by Google.", 400
 
 
-    user = User(
-        id=unique_id, name=users_name, email=users_email, profile_image_url=picture
-    )
-
+    # Create a user in your db with the information provided
+    # by Google
+    user = User(id=unique_id, name=users_name, email=users_email, profile_image_url=picture)
     # Doesn't exist? Add it to the database.
     if not User.get(unique_id):
+        print('created user')
         User.create(unique_id, users_name, users_email, picture)
 
+
+
     # Begin user session by logging the user in
-    login_user(user)
+    if login_user(user):
+        print('logged in')
+    else:
+        print('not logged in')
 
     # Send user back to homepage
     return redirect(url_for('index'))
@@ -141,13 +134,9 @@ def recipe_book():
 def about():
     return render_template('about.html')
 
-# @app.route('/login')
-# def login():
-#     return render_template('login.html')
-
 if __name__=='__main__':
     Bootstrap(app)
     with app.app_context():
         db.create_all()
     # get_user()
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
