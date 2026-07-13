@@ -137,11 +137,17 @@ def recipe_book():
     try:
         recipes = User.query.get_or_404(current_user.id).recipes
         return render_template('recipe_book.html', recipes=recipes)
-    except:
+    except Exception as e:
+        print(e)
         return redirect('/login')
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/recipe/new', methods=['POST','GET'])
+def add_recipe():
+    recipes = User.query.get_or_404(current_user.id).recipes
+    return redirect(url_for('recipe_book'))
 
 if __name__=='__main__':
     Bootstrap(app)

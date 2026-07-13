@@ -2,52 +2,66 @@
 
 {% block content %}
   {% if recipes %}
-    <h1>{{recipes[0].name}}</h1>
-    <h1>{{recipes[0].ingreients}}</h1>
-    <h1>{{recipes[0].url}}</h1>
-    <h1>{{recipes[0].calories}}</h1>
-    <h1>{{recipes[0].servings}}</h1>
-    <h1>{{recipes[0].amount}}</h1>
-    <h1>{{recipes[0].directions}}</h1>
+    <ul class="list-group">
+      {% for key, value in recipes|dictsort %}
+        <li class="list-group-item list-group-item-primary d-flex justify-content-between align-items-center" data-bs-toggle="modal" data-bs-target="#{{key}}">
+          <button class="btn btn-lg btn-primary" type="button" >{{recipes[key].name}}</button>
+          <span class="badge bg-primary rounded-pill">
+            Calories per serving: {{recipes[key].totalCal / recipes[key].servings}}
+          </span>
+        </li>
+        <div class="modal" id="{{key}}">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">{{recipes[key].name}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Ingredient</th>
+                      <th scope="col">amount</th>
+                      <th scope="col">calories</th>
+                      <th scope="col">macros</th>
+                      <th scope="col">link</th>
+                    </tr>
+                  </thead>
+                  {% for ingredient in recipes[key].ingredients %}
+                    <tbody>
+                      <tr class="table-active">
+                        <th scope="row">{{ingredient}}</th>
+                        <td>{{recipes[key].ingredients[ingredient].amount}}</td>
+                        <td>{{recipes[key].ingredients[ingredient].calories}}</td>
+                        <td>
+                          protein: {{recipes[key].ingredients[ingredient].macros.protein}}g
+                          fat: {{recipes[key].ingredients[ingredient].macros.fat}}g
+                          carbohydrates: {{recipes[key].ingredients[ingredient].macros.carbs}}g
+                        </td>
+                        <td><a href="http://{{recipes[key].ingredients[ingredient].url}}" target="_blank">{{recipes[key].ingredients[ingredient].url}}</a></td>
+                      </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+                <h2>Directions: </h2>
+                <p>{{recipes[key].directions}}</p>
+                <h3>Servings: {{recipes[key].servings}}</h3>
+                <h3>Total calories: {{recipes[key].totalCal}}</h3>
+              </div>
+              <div class="modal-footer">
+                <!-- TODO: make editable -->
+                <button type="button" class="btn btn-primary">Edit</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </ul>
 
-    <div class="accordion" id="accordionExample">
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingOne">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            Accordion Item #1
-          </button>
-        </h2>
-        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
-          <div class="accordion-body">
-            <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingTwo">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            Accordion Item #2
-          </button>
-        </h2>
-        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample" style="">
-          <div class="accordion-body">
-            <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingThree">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-            Accordion Item #3
-          </button>
-        </h2>
-        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample" style="">
-          <div class="accordion-body">
-            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-          </div>
-        </div>
-      </div>
-    </div>
   {% else %}
     <h2>Your recipe book is empty, add your first recipe!</h2>
   {% endif %}
