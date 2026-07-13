@@ -41,7 +41,7 @@ def index():
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
-@app.route("/login")
+@app.route('/login')
 def login():
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
@@ -121,15 +121,24 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+@app.errorhandler(401)
+def page_not_found(e):
+    return redirect('/')
+
 @app.route('/new')
 def new_recipe():
-    return render_template('new_recipe.html')
+    if current_user.is_active:
+        return render_template('new_recipe.html')
+    else:
+        return redirect('/login')
 
 @app.route('/recipes')
 def recipe_book():
-    recipes = User.query.get_or_404(id).recipes
-    return render_template('recipe_book.html', recipes=recipes)
-
+    try:
+        recipes = User.query.get_or_404(current_user.id).recipes
+        return render_template('recipe_book.html', recipes=recipes)
+    except:
+        return redirect('/login')
 @app.route('/about')
 def about():
     return render_template('about.html')
