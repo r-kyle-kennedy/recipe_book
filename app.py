@@ -146,7 +146,60 @@ def about():
 
 @app.route('/recipe/new', methods=['POST','GET'])
 def add_recipe():
-    recipes = User.query.get_or_404(current_user.id).recipes
+    if request.form:
+        # dynamically make ingredient dictionary for db
+        ingredients={}
+        ingredient_names=[]
+        ingredient_amounts=[]
+        ingredient_urls=[]
+        ingredient_calories=[]
+        ingredient_protein=[]
+        ingredient_fat=[]
+        ingredient_carbs=[]
+        total_cal_counter=0
+
+        print(request.form)
+        for key, value in request.form.items():
+            if key.startswith('ingredient'):
+                ingredient_names.append(value)
+            elif key.startswith('amount'):
+                ingredient_amounts.append(value)
+            elif key.startswith('url'):
+                ingredient_urls.append(value)
+            elif key.startswith('calories'):
+                ingredient_calories.append(value)
+                total_cal_counter+=int(value)
+            elif key.startswith('protein'):
+                ingredient_protein.append(value)
+            elif key.startswith('fat'):
+                ingredient_fat.append(value)
+            elif key.startswith('carbs'):
+                ingredient_carbs.append(value)
+        print(ingredient_names)
+        for n in range(0, len(ingredient_names)):
+            ingredients[ingredient_names[n]] = {
+                "amount" : ingredient_amounts[n],
+                "calories" : int(ingredient_calories[n]),
+                "url" : ingredient_urls[n],
+                "macros" :
+                    {
+                    "protein" : int(ingredient_protein[n]),
+                    "fat" : int(ingredient_fat[n]),
+                    "carbs" : int(ingredient_carbs[n])
+                    }
+            }
+        print(ingredients)
+        recipes = User.query.get_or_404(current_user.id).recipes
+        edit_name = request.form['name'].replace(' ', '_')
+        recipes.update({edit_name : {
+            'name' : request.form['name'],
+            'ingredients' : ingredients,
+            'directions' : request.form['directions'],
+            'servings': int(request.form['servings']),
+            'totalCal': total_cal_counter
+        }})
+        print(recipes)
+        User.update_recipes(recipes, current_user.id)
     return redirect(url_for('recipe_book'))
 
 if __name__=='__main__':

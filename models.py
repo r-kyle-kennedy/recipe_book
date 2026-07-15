@@ -38,3 +38,11 @@ class User(UserMixin, db.Model):
         user = User(id = id_, name = name, email=email, profile_image_url=profile_pic)
         db.session.add(user)
         db.session.commit()
+
+    @staticmethod
+    def update_recipes(new_recipe_book, user_id):
+        with app.app_context():
+            user = User.get(user_id)
+            print('in update: ', new_recipe_book)
+            user.recipes = new_recipe_book
+            db.session.commit()
