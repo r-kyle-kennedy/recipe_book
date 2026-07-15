@@ -138,7 +138,7 @@ def recipe_book():
         recipes = User.query.get_or_404(current_user.id).recipes
         return render_template('recipe_book.html', recipes=recipes)
     except Exception as e:
-        print(e)
+        print(e, 'in recipe book function')
         return redirect('/login')
 @app.route('/about')
 def about():
@@ -157,8 +157,7 @@ def add_recipe():
         ingredient_fat=[]
         ingredient_carbs=[]
         total_cal_counter=0
-
-        print(request.form)
+        print(request.form.items)
         for key, value in request.form.items():
             if key.startswith('ingredient'):
                 ingredient_names.append(value)
@@ -175,7 +174,6 @@ def add_recipe():
                 ingredient_fat.append(value)
             elif key.startswith('carbs'):
                 ingredient_carbs.append(value)
-        print(ingredient_names)
         for n in range(0, len(ingredient_names)):
             ingredients[ingredient_names[n]] = {
                 "amount" : ingredient_amounts[n],
@@ -188,7 +186,6 @@ def add_recipe():
                     "carbs" : int(ingredient_carbs[n])
                     }
             }
-        print(ingredients)
         recipes = User.query.get_or_404(current_user.id).recipes
         edit_name = request.form['name'].replace(' ', '_')
         recipes.update({edit_name : {
@@ -198,9 +195,27 @@ def add_recipe():
             'servings': int(request.form['servings']),
             'totalCal': total_cal_counter
         }})
-        print(recipes)
         User.update_recipes(recipes, current_user.id)
     return redirect(url_for('recipe_book'))
+
+@app.route('/recipe/delete/<recipe_key>', methods=['POST','GET'])
+def delete_recipe(recipe_key):
+    recipes = User.query.get_or_404(current_user.id).recipes
+    recipes.pop(recipe_key)
+    User.update_recipes(recipes, current_user.id)
+    return redirect(url_for('recipe_book'))
+
+
+@app.route('/recipe/edit/<recipe_key>', methods=['POST','GET'])
+def edit_recipe(recipe_key):
+    recipe_key = recipe_key.replace(' ', '_')
+    recipes = User.query.get_or_404(current_user.id).recipes
+    if request.form:
+        recipes.pop(recipe_key)
+        User.update_recipes(recipes, current_user.id)
+        add_recipe()
+        return redirect(url_for('recipe_book'))
+    return render_template('edit_recipe.html', recipe=recipes[recipe_key])
 
 if __name__=='__main__':
     Bootstrap(app)
