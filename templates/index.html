@@ -1,5 +1,8 @@
 {% extends 'header_and_footer.html' %}
 
 {% block content %}
-  <p>this is index</p>
+  <h2>this is the home page</h2>
+  {% if current_user.is_authenticated %}
+    Hi {{ current_user.name }}!
+  {% endif %}
 {% endblock %}

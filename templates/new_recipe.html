@@ -1,0 +1,53 @@
+{% extends 'header_and_footer.html' %}
+
+{% block content %}
+  <form action="{{url_for('add_recipe')}}" method="POST">
+  <fieldset>
+    <legend>Your Recipe</legend>
+    <div class="row">
+      <label for="name" lass="form-label mt-4">Recipe Name</label>
+      <input type="text" class="form-control" name="name" id="name" placeholder="Recipe Name" required>
+    </div>
+    <div id="ingredientContainer" class="row">
+        <div class="ingredient-row">
+            <input type="text" name="ingredient" placeholder="Enter ingredient" required>
+            <input type="text" name="amount" placeholder="Enter amount: ie 1 cup" required>
+            <input type="text" name="url" placeholder="URL" required>
+            <input type="number" name="calories" placeholder="Calories" required>
+            <input type="number" name="protein" placeholder="Grams of Protein" required>
+            <input type="number" name="fat" placeholder="Grams of Fat" required>
+            <input type="number" name="carbs" placeholder="Grams of Carbohydrates" required>
+            <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
+        </div>
+    </div>
+    <button type="button" onclick="addIngredient()">Add Ingredient</button>
+    <div class="row">
+      <label for="directions" class="form-label mt-4">Directions</label>
+      <textarea class="form-control" id="directions" name="directions" rows="6" required></textarea>
+    </div>
+    <div>
+      <label for="servings" class="form-label mt-4">Number of Servings</label>
+      <select class="form-select" id="servings" name="servings">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>10</option>
+        <option>11</option>
+        <option>12</option>
+        <option>13</option>
+        <option>14</option>
+        <option>15</option>
+        <option>16</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="reset" class="btn btn-danger">Cancel</button>
+  </fieldset>
+  </form>
+{% endblock %}

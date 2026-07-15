@@ -1,0 +1,14 @@
+.login_button{
+  margin-left: 10px;
+}
+
+.logout_button{
+  margin-left: 10px;
+}
+
+.profile_pic{
+  border-radius: 50%;
+  height:25%;
+  width:25%;
+  margin-left: 10px;
+}

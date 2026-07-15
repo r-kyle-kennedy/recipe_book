@@ -1,0 +1,73 @@
+{% extends 'header_and_footer.html' %}
+
+{% block content %}
+  {% if recipes %}
+    <ul class="list-group">
+      {% for key, value in recipes|dictsort %}
+        <li class="list-group-item list-group-item-primary d-flex justify-content-between align-items-center" data-bs-toggle="modal" data-bs-target="#{{key}}">
+          <button class="btn btn-lg btn-primary" type="button" >{{recipes[key].name}}</button>
+          <span class="badge bg-primary rounded-pill">
+            Calories per serving: {{recipes[key].totalCal / recipes[key].servings}}
+          </span>
+        </li>
+        <div class="modal" id="{{key}}">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">{{recipes[key].name}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Ingredient</th>
+                      <th scope="col">amount</th>
+                      <th scope="col">calories</th>
+                      <th scope="col">macros</th>
+                      <th scope="col">link</th>
+                    </tr>
+                  </thead>
+                  {% for ingredient in recipes[key].ingredients %}
+                    <tbody>
+                      <tr class="table-active">
+                        <th scope="row">{{ingredient}}</th>
+                        <td>{{recipes[key].ingredients[ingredient].amount}}</td>
+                        <td>{{recipes[key].ingredients[ingredient].calories}}</td>
+                        <td>
+                          protein: {{recipes[key].ingredients[ingredient].macros.protein}}g
+                          fat: {{recipes[key].ingredients[ingredient].macros.fat}}g
+                          carbohydrates: {{recipes[key].ingredients[ingredient].macros.carbs}}g
+                        </td>
+                        <td><a href="http://{{recipes[key].ingredients[ingredient].url}}" target="_blank">{{recipes[key].ingredients[ingredient].url}}</a></td>
+                      </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+                <h2>Directions: </h2>
+                <p>{{recipes[key].directions}}</p>
+                <h3>Servings: {{recipes[key].servings}}</h3>
+                <h3>Total calories: {{recipes[key].totalCal}}</h3>
+              </div>
+              <div class="modal-footer">
+                <!-- TODO: make editable -->
+                <form action="{{url_for('edit_recipe', recipe_key=key)}}" method="POST">
+                  <button type="submit" class="btn btn-primary">Edit</button>
+                </form>
+                <form action="{{url_for('delete_recipe', recipe_key=key)}}" method="POST">
+                  <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </ul>
+
+  {% else %}
+    <h2>Your recipe book is empty, add your first recipe!</h2>
+  {% endif %}
+{% endblock %}
