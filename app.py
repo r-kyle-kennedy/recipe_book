@@ -1,6 +1,7 @@
 import json
 import os
 import sqlite3
+from urllib.request import urlopen
 from flask import Flask, redirect, request, url_for, render_template
 from flask_login import (
     LoginManager,
@@ -24,6 +25,7 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
+RECIPEAPI_KEY = os.environ.get("RECIPEAPI_KEY", None)
 
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 login_manager = LoginManager()
@@ -157,7 +159,6 @@ def add_recipe():
         ingredient_fat=[]
         ingredient_carbs=[]
         total_cal_counter=0
-        print(request.form.items)
         for key, value in request.form.items():
             if key.startswith('ingredient'):
                 ingredient_names.append(value)
@@ -216,6 +217,24 @@ def edit_recipe(recipe_key):
         add_recipe()
         return redirect(url_for('recipe_book'))
     return render_template('edit_recipe.html', recipe=recipes[recipe_key])
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_new_recipe():
+    if request.form:
+        try:
+            response = requests.get(
+                "https://recipeapi.io/api/v1/recipes",
+                params={"search": request.form['search']},
+                headers={"Authorization": f"Bearer {RECIPEAPI_KEY}"}
+            )
+
+            data = response.json()
+            return render_template('search_results.html', recipes=data['data'])
+        except Exception as e:
+            raise
+
+
+    return render_template('index.html')
 
 if __name__=='__main__':
     Bootstrap(app)

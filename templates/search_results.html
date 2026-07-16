@@ -1,0 +1,63 @@
+{% extends 'header_and_footer.html' %}
+
+{% block content %}
+  {% if recipes %}
+    <ul class="list-group">
+      {% for recipe in recipes %}
+        <li class="list-group-item list-group-item-primary d-flex justify-content-between align-items-center" data-bs-toggle="modal" data-bs-target="#{{recipe['id']}}">
+          <button class="btn btn-lg btn-primary" type="button" >{{recipe['name']}}</button>
+          <span class="badge bg-primary rounded-pill">
+            Calories per serving: {{recipe['calories_per_serving']}}
+          </span>
+        </li>
+        <div class="modal" id="{{recipe['id']}}">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">{{recipe['name']}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Ingredient</th>
+                      <th scope="col">amount</th>
+                      <th scope="col">unit</th>
+                      <th scope="col">optional</th>
+                    </tr>
+                  </thead>
+                  {% for ingredient in recipe['ingredients'] %}
+                    <tbody>
+                      <tr class="table-active">
+                        <th scope="row">{{ingredient['name']}}</th>
+                        <td>{{ingredient['quantity']}}</td>
+                        <td>{{ingredient['unit']}}</td>
+                        <td>{{ingredient['optional']}}</td>
+                      </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+                <h2>Directions: </h2>
+                <ol>
+                  {% for direction in recipe['instructions'] %}
+                    <li>{{direction}}</li>
+                  {% endfor %}
+                </ol>
+                <h3>Servings: {{recipe['servings']}}</h3>
+                <div id="calories{{recipe['id']}}"">
+                  <script> calculateCalories({{recipe['calories_per_serving']}}, {{recipe['servings']}}, {{recipe['id']}})</script>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <h2>Your search didn't turn up any results</h2>
+  {% endif %}
+{% endblock %}
