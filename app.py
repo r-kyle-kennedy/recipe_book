@@ -211,6 +211,7 @@ def delete_recipe(recipe_key):
 def edit_recipe(recipe_key):
     recipe_key = recipe_key.replace(' ', '_')
     recipes = User.query.get_or_404(current_user.id).recipes
+    print(recipes[recipe_key])
     if request.form:
         recipes.pop(recipe_key)
         User.update_recipes(recipes, current_user.id)

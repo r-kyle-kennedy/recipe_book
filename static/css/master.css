@@ -12,3 +12,28 @@
   width:25%;
   margin-left: 10px;
 }
+
+.page{
+  height: 100%;
+  width: 100%;
+  background: #FFF url(/static/img/vecteezy_old-book-clipart-design-illustration_9380325.png) no-repeat center top;
+
+}
+
+.homepage{
+  width: 50%;
+    height: 50%;
+
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+}
+
+.navbar{
+  font-size: 1em;
+  /* font-weight: 900; */
+}

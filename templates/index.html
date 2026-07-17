@@ -1,8 +1,14 @@
 {% extends 'header_and_footer.html' %}
 
 {% block content %}
-  <h2>this is the home page</h2>
+  <div class="homepage">
   {% if current_user.is_authenticated %}
-    Hi {{ current_user.name }}!
+    <h2>Hi {{ current_user.name }}, </h2>
+    <h4>Welcome to your recipe book, where you can add and cutomize your own personal recipes.</h4>
+    <h4>Make sure to check out our search feature to find something new to eat!</h4>
+  {% else %}
+    <h2>Please login to start using your personal recipe book</h2>
+
   {% endif %}
+  </div>
 {% endblock %}
