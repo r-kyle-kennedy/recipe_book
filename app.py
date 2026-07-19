@@ -1,7 +1,6 @@
 import json
 import os
 import sqlite3
-# from urllib.request import urlopen
 from flask import Flask, redirect, request, url_for, render_template
 from flask_login import (
     LoginManager,
@@ -240,4 +239,4 @@ if __name__=='__main__':
     with app.app_context():
         db.create_all()
     # get_user()
-    # app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000)
