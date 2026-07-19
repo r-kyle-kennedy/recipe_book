@@ -52,7 +52,6 @@
                 <h3>Total calories: {{recipes[key].totalCal}}</h3>
               </div>
               <div class="modal-footer">
-                <!-- TODO: make editable -->
                 <form action="{{url_for('edit_recipe', recipe_key=key)}}" method="POST">
                   <button type="submit" class="btn btn-primary">Edit</button>
                 </form>

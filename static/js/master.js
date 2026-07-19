@@ -26,7 +26,6 @@ function removeIngredient(button) {
 }
 
 function buildForm(recipe) {
-  console.log(recipe)
   ingredients=Object.keys(recipe['ingredients'])
   const container = document.getElementById('ingredientContainer');
   for (var i = 0; i < ingredients.length; i++) {
@@ -45,4 +44,11 @@ function buildForm(recipe) {
     container.appendChild(newRow);
     ingredientCounter++;
   }
+}
+
+function calculateCalories(cps, servings, id){
+  const container = document.getElementById("calories"+id);
+  container.innerHTML = `
+    <h3>Total Calories: ${cps*servings}</h3>
+  `;
 }
