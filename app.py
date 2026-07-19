@@ -1,7 +1,7 @@
 import json
 import os
 import sqlite3
-from urllib.request import urlopen
+# from urllib.request import urlopen
 from flask import Flask, redirect, request, url_for, render_template
 from flask_login import (
     LoginManager,
