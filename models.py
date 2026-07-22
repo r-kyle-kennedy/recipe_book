@@ -53,7 +53,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def create(id_, name, email, profile_pic):
-        user = User(id = id_, name = name, email=email, profile_image_url=profile_pic)
+        user = User(id=id_, name=name, email=email, profile_image_url=profile_pic, recipes={})
         db.session.add(user)
         db.session.commit()
 

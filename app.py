@@ -150,60 +150,67 @@ def about():
 @app.route('/recipe/new', methods=['POST','GET'])
 def add_recipe():
     if request.form:
-        # dynamically make ingredient dictionary for db
-        ingredients={}
-        ingredient_names=[]
-        ingredient_amounts=[]
-        ingredient_urls=[]
-        ingredient_calories=[]
-        ingredient_protein=[]
-        ingredient_fat=[]
-        ingredient_carbs=[]
-        total_cal_counter=0
-        for key, value in request.form.items():
-            if key.startswith('ingredient'):
-                ingredient_names.append(value)
-            elif key.startswith('amount'):
-                ingredient_amounts.append(value)
-            elif key.startswith('url'):
-                ingredient_urls.append(value)
-            elif key.startswith('calories'):
-                ingredient_calories.append(value)
-                total_cal_counter+=int(value)
-            elif key.startswith('protein'):
-                ingredient_protein.append(value)
-            elif key.startswith('fat'):
-                ingredient_fat.append(value)
-            elif key.startswith('carbs'):
-                ingredient_carbs.append(value)
-        for n in range(0, len(ingredient_names)):
-            ingredients[ingredient_names[n]] = {
-                "amount" : ingredient_amounts[n],
-                "calories" : int(ingredient_calories[n]),
-                "url" : ingredient_urls[n],
-                "macros" :
-                    {
-                    "protein" : int(ingredient_protein[n]),
-                    "fat" : int(ingredient_fat[n]),
-                    "carbs" : int(ingredient_carbs[n])
-                    }
-            }
-        recipes = User.query.get_or_404(current_user.id).recipes
-        edit_name = request.form['name'].replace(' ', '_')
-        recipes.update({edit_name : {
-            'name' : request.form['name'],
-            'ingredients' : ingredients,
-            'directions' : request.form['directions'],
-            'servings': int(request.form['servings']),
-            'totalCal': total_cal_counter
-        }})
-        User.update_recipes(recipes, current_user.id)
+        try:
+            # dynamically make ingredient dictionary for db
+            ingredients={}
+            ingredient_names=[]
+            ingredient_amounts=[]
+            ingredient_urls=[]
+            ingredient_calories=[]
+            ingredient_protein=[]
+            ingredient_fat=[]
+            ingredient_carbs=[]
+            total_cal_counter=0
+            for key, value in request.form.items():
+                if key.startswith('ingredient'):
+                    ingredient_names.append(value)
+                elif key.startswith('amount'):
+                    ingredient_amounts.append(value)
+                elif key.startswith('url'):
+                    ingredient_urls.append(value)
+                elif key.startswith('calories'):
+                    ingredient_calories.append(value)
+                    total_cal_counter += int(value or 0)
+                elif key.startswith('protein'):
+                    ingredient_protein.append(value)
+                elif key.startswith('fat'):
+                    ingredient_fat.append(value)
+                elif key.startswith('carbs'):
+                    ingredient_carbs.append(value)
+            for n in range(0, len(ingredient_names)):
+                ingredients[ingredient_names[n]] = {
+                    "amount" : ingredient_amounts[n],
+                    "calories" : int(ingredient_calories[n] or 0),
+                    "url" : ingredient_urls[n],
+                    "macros" :
+                        {
+                        "protein" : int(ingredient_protein[n] or 0),
+                        "fat" : int(ingredient_fat[n] or 0),
+                        "carbs" : int(ingredient_carbs[n] or 0)
+                        }
+                }
+            user = User.query.get(current_user.id)
+            if user is None:
+                return redirect('/login')
+            recipes = user.recipes or {}
+            edit_name = request.form.get('name', '').replace(' ', '_') or 'recipe'
+            recipes.update({edit_name: {
+                'name': request.form.get('name', ''),
+                'ingredients': ingredients,
+                'directions': request.form.get('directions', ''),
+                'servings': int(request.form.get('servings', 0) or 0),
+                'totalCal': total_cal_counter
+            }})
+            User.update_recipes(recipes, current_user.id)
+        except Exception as e:
+            print('Error saving recipe:', e)
     return redirect(url_for('recipe_book'))
 
 @app.route('/recipe/delete/<recipe_key>', methods=['POST','GET'])
 def delete_recipe(recipe_key):
-    recipes = User.query.get_or_404(current_user.id).recipes
-    recipes.pop(recipe_key)
+    user = User.query.get_or_404(current_user.id)
+    recipes = user.recipes or {}
+    recipes.pop(recipe_key, None)
     User.update_recipes(recipes, current_user.id)
     return redirect(url_for('recipe_book'))
 
@@ -211,9 +218,10 @@ def delete_recipe(recipe_key):
 @app.route('/recipe/edit/<recipe_key>', methods=['POST','GET'])
 def edit_recipe(recipe_key):
     recipe_key = recipe_key.replace(' ', '_')
-    recipes = User.query.get_or_404(current_user.id).recipes
+    user = User.query.get_or_404(current_user.id)
+    recipes = user.recipes or {}
     if request.form:
-        recipes.pop(recipe_key)
+        recipes.pop(recipe_key, None)
         User.update_recipes(recipes, current_user.id)
         add_recipe()
         return redirect(url_for('recipe_book'))
