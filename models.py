@@ -12,6 +12,8 @@ def get_database_uri():
     if database_url:
         if database_url.startswith("postgres://"):
             database_url = database_url.replace("postgres://", "postgresql://", 1)
+        if database_url.startswith("postgresql://") and "://" in database_url.split("@", 1)[0]:
+            database_url = database_url.replace("postgresql://", "postgresql+psycopg://", 1)
         return database_url
 
     db_path = os.path.join(BASE_DIR, "users.db")
