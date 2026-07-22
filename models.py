@@ -1,13 +1,26 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import datetime
 from flask_login import UserMixin
+import os
 import os.path
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "users.db")
-app=Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
+
+
+def get_database_uri():
+    database_url = os.getenv("DATABASE_URL") or os.getenv("SQLALCHEMY_DATABASE_URI")
+    if database_url:
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
+        return database_url
+
+    db_path = os.path.join(BASE_DIR, "users.db")
+    return "sqlite:///" + db_path
+
+
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = get_database_uri()
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 class User(UserMixin, db.Model):

@@ -15,10 +15,10 @@ from flask_bootstrap import Bootstrap
 from models import db, app, User
 from dotenv import load_dotenv
 
+load_dotenv()
 env_config = os.getenv("PROD_APP_SETTINGS", "config.DevelopmentConfig")
 app.config.from_object(env_config)
 
-load_dotenv()
 #set to dasable https, remove for launch
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
@@ -237,9 +237,9 @@ def search_new_recipe():
 
     return render_template('index.html')
 
+Bootstrap(app)
+with app.app_context():
+    db.create_all()
+
 if __name__=='__main__':
-    Bootstrap(app)
-    with app.app_context():
-        db.create_all()
-    # get_user()
-    # app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000)
